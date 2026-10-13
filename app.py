@@ -1,7 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import streamlit as st
-
+import streanmlit as st
 st.set_page_config(
     page_title="Quản lý điểm sinh viên",
     page_icon="📚",
