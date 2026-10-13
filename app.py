@@ -1,7 +1,10 @@
-import pandas as pd
-import streamlit as st
-import matplotlib.pyplot as plt
+st.set_page_config(
+    page_title="Quản lý điểm sinh viên",
+    page_icon="📚",
+    layout="wide"
+)
 st.title("QUẢN LÝ ĐIỂM SINH VIÊN")
+st.write("Bảng điểm, thống kê và xếp loại sinh viên")
 data = {
     "họ và tên": [
         "Nguyễn Văn A", "Nguyễn Văn B", "Nguyễn Văn C",
@@ -30,19 +33,66 @@ def xep_loai(diem):
         return "Yếu"
 Bang_diem["xếp loại"] = Bang_diem["tổng kết"].apply(xep_loai)
 st.subheader("1. Bảng điểm sinh viên")
-st.dataframe(Bang_diem, use_container_width=True)
-st.subheader("2. Thống kê kết quả")
-st.write("Điểm trung bình:", round(Bang_diem["tổng kết"].mean(), 2))
-st.write("Điểm cao nhất:", Bang_diem["tổng kết"].max())
-st.write("Điểm thấp nhất:", Bang_diem["tổng kết"].min())
+st.dataframe(
+    Bang_diem,
+    use_container_width=True,
+    hide_index=True
+)
+st.subheader("2. Thống kê kết quả học tập")
+diem_trung_binh = Bang_diem["tổng kết"].mean()
+diem_cao_nhat = Bang_diem["tổng kết"].max()
+diem_thap_nhat = Bang_diem["tổng kết"].min()
 so_sinh_vien_dat = (Bang_diem["tổng kết"] >= 5).sum()
-st.write("Số sinh viên đạt:", so_sinh_vien_dat)
-st.subheader("3. Biểu đồ điểm tổng kết")
-fig, ax = plt.subplots(figsize=(10, 5))
-ax.bar(Bang_diem["họ và tên"], Bang_diem["tổng kết"])
-ax.set_title("Điểm tổng kết của 10 sinh viên")
+cot1, cot2, cot3, cot4 = st.columns(4)
+cot1.metric("Điểm trung bình", f"{diem_trung_binh:.2f}")
+cot2.metric("Điểm cao nhất", f"{diem_cao_nhat:.2f}")
+cot3.metric("Điểm thấp nhất", f"{diem_thap_nhat:.2f}")
+cot4.metric("Số sinh viên đạt", int(so_sinh_vien_dat))
+st.write("**Sinh viên có điểm cao nhất:**")
+st.write(
+    Bang_diem.loc[
+        Bang_diem["tổng kết"] == diem_cao_nhat,
+        ["họ và tên", "tổng kết"]
+    ].to_string(index=False)
+)
+st.write("**Sinh viên có điểm thấp nhất:**")
+st.write(
+    Bang_diem.loc[
+        Bang_diem["tổng kết"] == diem_thap_nhat,
+        ["họ và tên", "tổng kết"]
+    ].to_string(index=False)
+)
+st.subheader("3. Biểu đồ điểm tổng kết của 10 sinh viên")
+fig, ax = plt.subplots(figsize=(12, 6))
+ax.bar(
+    Bang_diem["họ và tên"],
+    Bang_diem["tổng kết"],
+    color="skyblue",
+    edgecolor="black"
+)
+ax.set_title("ĐIỂM TỔNG KẾT CỦA 10 SINH VIÊN")
 ax.set_xlabel("Tên sinh viên")
 ax.set_ylabel("Điểm tổng kết")
 ax.set_ylim(0, 10)
-plt.xticks(rotation=30, ha="right")
+for i, diem in enumerate(Bang_diem["tổng kết"]):
+    ax.text(
+        i,
+        diem + 0.1,
+        f"{diem:.1f}",
+        ha="center",
+        fontsize=9
+    )
+plt.xticks(rotation=35, ha="right")
 plt.tight_layout()
+st.pyplot(fig, use_container_width=True)
+plt.close(fig)
+st.divider()
+st.markdown(
+    """
+    <div style="text-align: center; color: gray; font-size: 12px;">
+        Thực hiện bởi: Tống Nguyễn Ngọc Thành
+        &nbsp;|&nbsp; MSSV: 054208005728
+    </div>
+    """,
+    unsafe_allow_html=True
+)
