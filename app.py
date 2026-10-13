@@ -1,3 +1,6 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import streamlit as sti
 st.set_page_config(
     page_title="Quản lý điểm sinh viên",
     page_icon="📚",
@@ -48,22 +51,23 @@ cot1.metric("Điểm trung bình", f"{diem_trung_binh:.2f}")
 cot2.metric("Điểm cao nhất", f"{diem_cao_nhat:.2f}")
 cot3.metric("Điểm thấp nhất", f"{diem_thap_nhat:.2f}")
 cot4.metric("Số sinh viên đạt", int(so_sinh_vien_dat))
-st.write("**Sinh viên có điểm cao nhất:**")
-st.write(
-    Bang_diem.loc[
-        Bang_diem["tổng kết"] == diem_cao_nhat,
+col_top, col_bot = st.columns(2)
+with col_top:
+    st.write("**Sinh viên có điểm cao nhất:**")
+    sv_max = Bang_diem.loc[
+        Bang_diem["tổng kết"] == diem_cao_nhat, 
         ["họ và tên", "tổng kết"]
-    ].to_string(index=False)
-)
-st.write("**Sinh viên có điểm thấp nhất:**")
-st.write(
-    Bang_diem.loc[
-        Bang_diem["tổng kết"] == diem_thap_nhat,
+    ]
+    st.dataframe(sv_max, hide_index=True, use_container_width=True)
+with col_bot:
+    st.write("**Sinh viên có điểm thấp nhất:**")
+    sv_min = Bang_diem.loc[
+        Bang_diem["tổng kết"] == diem_thap_nhat, 
         ["họ và tên", "tổng kết"]
-    ].to_string(index=False)
-)
+    ]
+    st.dataframe(sv_min, hide_index=True, use_container_width=True)
 st.subheader("3. Biểu đồ điểm tổng kết của 10 sinh viên")
-fig, ax = plt.subplots(figsize=(12, 6))
+fig, ax = plt.subplots(figsize=(12, 5))
 ax.bar(
     Bang_diem["họ và tên"],
     Bang_diem["tổng kết"],
@@ -73,11 +77,11 @@ ax.bar(
 ax.set_title("ĐIỂM TỔNG KẾT CỦA 10 SINH VIÊN")
 ax.set_xlabel("Tên sinh viên")
 ax.set_ylabel("Điểm tổng kết")
-ax.set_ylim(0, 10)
+ax.set_ylim(0, 10.5)
 for i, diem in enumerate(Bang_diem["tổng kết"]):
     ax.text(
         i,
-        diem + 0.1,
+        diem + 0.15,
         f"{diem:.1f}",
         ha="center",
         fontsize=9
@@ -90,8 +94,7 @@ st.divider()
 st.markdown(
     """
     <div style="text-align: center; color: gray; font-size: 12px;">
-        Thực hiện bởi: Tống Nguyễn Ngọc Thành
-        &nbsp;|&nbsp; MSSV: 054208005728
+        Thực hiện bởi: Tống Nguyễn Ngọc Thành &nbsp;|&nbsp; MSSV: 054208005728
     </div>
     """,
     unsafe_allow_html=True
